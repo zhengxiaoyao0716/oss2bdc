@@ -22,8 +22,16 @@ func toGbk(str string) string {
 func Compress(dir string) {
 	config := GetConfig()
 	parts := strings.Split(dir, "/")
-	os.MkdirAll(config.ZipPath, 777)
-	zipFile, err := os.Create(config.ZipPath + parts[1] + ".zip")
+	zipPath := config.RawPath + parts[1] + ".zip"
+	zipFile, err := os.Create(zipPath)
+	defer func() {
+		zipFile.Close()
+		newZipPath := config.ZipPath + parts[1] + ".zip"
+		os.MkdirAll(config.ZipPath, 777)
+		if err := os.Rename(zipPath, newZipPath); err != nil {
+			log.Fatalln("os.Rename:", err)
+		}
+	}()
 	if err != nil {
 		log.Fatalln("os.Create:", err)
 	}
@@ -31,7 +39,7 @@ func Compress(dir string) {
 	defer zipWriter.Close()
 
 	if err := filepath.Walk(
-		"SocialPractice/"+dir,
+		config.RawPath+dir,
 		func(path string, info os.FileInfo, err error) error {
 			if info == nil || info.IsDir() {
 				return nil

@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
 	defer oss2bdc.ShutDown()
 
 	var dir string

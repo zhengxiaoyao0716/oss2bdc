@@ -39,7 +39,7 @@ func downloadObject(name string) {
 	team = strings.Replace(team, "<", "《", -1)
 	team = strings.Replace(team, ">", "》", -1)
 	team = strings.Replace(team, "|", "　", -1)
-	dir := "SocialPractice/" + parts[0] + "/" + parts[1] + "/" + team + "/"
+	dir := GetConfig().RawPath + parts[0] + "/" + parts[1] + "/" + team + "/"
 	objPath := dir + parts[3] + ".jpg"
 	if exist(objPath) {
 		return

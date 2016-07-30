@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Oss     *ossConf
 	SQL     *sqlConf
+	RawPath string
 	ZipPath string
 }
 
@@ -25,18 +26,22 @@ type sqlConf struct {
 	Source string
 }
 
-// GetConfig 获取配置
-func GetConfig() *Config {
+var config *Config
+
+func init() {
 	bytes, err := ioutil.ReadFile("./cfg/oss2bdc.json")
 
 	if err != nil {
 		log.Fatalln("ioutil.ReadFile: ", err)
 	}
 
-	config := new(Config)
+	config = new(Config)
 	if err := json.Unmarshal(bytes, config); err != nil {
 		log.Fatalln("json.Unmarshal: ", err)
 	}
+}
 
+// GetConfig 获取配置
+func GetConfig() *Config {
 	return config
 }
