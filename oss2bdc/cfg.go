@@ -29,7 +29,7 @@ type sqlConf struct {
 var config *Config
 
 func init() {
-	bytes, err := ioutil.ReadFile("./cfg/oss2bdc.json")
+	bytes, err := ioutil.ReadFile("./res/conf/oss2bdc.json")
 
 	if err != nil {
 		log.Fatalln("ioutil.ReadFile: ", err)
