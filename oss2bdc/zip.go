@@ -21,6 +21,10 @@ func toGbk(str string) string {
 // Compress 压缩文件夹
 func Compress(dir string) {
 	config := GetConfig()
+	if config.ZipPath == "" {
+		log.Println("放弃压缩")
+		return
+	}
 	parts := strings.Split(dir, "/")
 	zipPath := config.RawPath + parts[1] + ".zip"
 	zipFile, err := os.Create(zipPath)

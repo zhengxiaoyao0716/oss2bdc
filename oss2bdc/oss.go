@@ -29,20 +29,32 @@ func exist(filename string) bool {
 	return err == nil || os.IsExist(err)
 }
 
+func replaceSpecialChar(rawStr string) string {
+	var str string
+	str = strings.Replace(rawStr, ":", "：", -1)
+	str = strings.Replace(str, "*", "　", -1)
+	str = strings.Replace(str, "?", "？", -1)
+	str = strings.Replace(str, "\"", "”", -1)
+	str = strings.Replace(str, "<", "《", -1)
+	str = strings.Replace(str, ">", "》", -1)
+	str = strings.Replace(str, "|", "　", -1)
+	return str
+}
+
 func downloadObject(name string) {
-	parts := strings.Split(toGbk(name), "/")
-	team := Phone2Team(parts[2])
-	team = strings.Replace(team, ":", "：", -1)
-	team = strings.Replace(team, "*", "　", -1)
-	team = strings.Replace(team, "?", "？", -1)
-	team = strings.Replace(team, "\"", "”", -1)
-	team = strings.Replace(team, "<", "《", -1)
-	team = strings.Replace(team, ">", "》", -1)
-	team = strings.Replace(team, "|", "　", -1)
-	dir := GetConfig().RawPath + parts[0] + "/" + parts[1] + "/" + team + "/"
-	objPath := dir + parts[3] + ".jpg"
-	if exist(objPath) {
-		return
+	var dir, objPath string
+	if engine == nil {
+		objPath = GetConfig().RawPath + replaceSpecialChar(name)
+		dir = objPath[0:strings.LastIndex(objPath, "/")]
+		os.MkdirAll(dir, 777)
+	} else {
+		parts := strings.Split(toGbk(name), "/")
+		team := replaceSpecialChar(Phone2Team(parts[2]))
+		dir = GetConfig().RawPath + parts[0] + "/" + parts[1] + "/" + team + "/"
+		objPath = dir + parts[3] + ".jpg"
+		if exist(objPath) {
+			return
+		}
 	}
 	os.MkdirAll(dir, 777)
 	if err := bucket.DownloadFile(name, objPath, 1024*1024, oss.Routines(3), oss.Checkpoint(true, "")); err != nil {

@@ -10,6 +10,11 @@ var engine *xorm.Engine
 
 func init() {
 	config := GetConfig()
+	if config.SQL.Driver == "" || config.SQL.Source == "" {
+		engine = nil
+		log.Println("放弃数据库模块.")
+		return
+	}
 	newOrm, err := xorm.NewEngine(config.SQL.Driver, config.SQL.Source)
 	if err != nil {
 		log.Fatalln("orm.NewEngine:", err)
@@ -22,6 +27,9 @@ func init() {
 
 // Phone2Team 按照手机号查找
 func Phone2Team(phone string) string {
+	if engine == nil {
+		return phone
+	}
 	res, err := engine.Query("SELECT name, root_phone FROM view_team_member WHERE phone = ?", phone)
 	if err != nil {
 		log.Fatalln("engine.Query:", err)
@@ -33,6 +41,9 @@ func Phone2Team(phone string) string {
 
 // ShutDown 切断数据库
 func ShutDown() {
+	if engine == nil {
+		return
+	}
 	if _, err := engine.Exec("DROP VIEW view_team_member"); err != nil {
 		log.Fatalln("engine.Exec:", err)
 	}
